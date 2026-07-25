@@ -37,7 +37,7 @@ export async function getMatches() {
     orderBy: { createdAt: "desc" },
   });
 
-  return matches.map((match: any) => {
+  return matches.map((match) => {
     const otherUser =
       match.userAId === userId ? match.userB : match.userA;
     return {

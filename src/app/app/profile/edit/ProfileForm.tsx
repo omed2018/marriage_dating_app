@@ -7,10 +7,17 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent } from "@/components/ui/Card";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { updateProfile } from "@/features/profile/actions";
-import { db } from "@/server/db";
 
 interface ProfileFormProps {
-  profile: any;
+  profile: {
+    bio?: string | null;
+    location?: string | null;
+    education?: string | null;
+    occupation?: string | null;
+    height?: number | null;
+    religion?: string | null;
+    photos?: { id: string; url: string; isPrimary: boolean }[];
+  } | null;
   userId: string;
 }
 
@@ -121,11 +128,12 @@ export function ProfileForm({ profile, userId }: ProfileFormProps) {
 
           {profile?.photos && profile.photos.length > 0 && (
             <div className="grid grid-cols-3 gap-4 mt-4">
-              {profile.photos.map((photo: any) => (
+              {profile.photos.map((photo) => (
                 <div
                   key={photo.id}
                   className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.url}
                     alt="Profile"

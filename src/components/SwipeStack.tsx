@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ProfileCard } from "./ProfileCard";
 import { sendLike, sendPass } from "@/features/browse/actions";
 import { blockUser, reportUser } from "@/features/report/actions";
-import { logger } from "@/lib/logger";
 
 interface Profile {
   id: string;
@@ -71,11 +70,6 @@ export function SwipeStack({ profiles }: SwipeStackProps) {
   }
 
   const profile = profiles[currentIndex];
-  const age = profile.photos[0]?.url
-    ? Math.floor(
-        (Date.now() - new Date().getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-      )
-    : undefined;
 
   return (
     <div className="relative">
@@ -92,7 +86,7 @@ export function SwipeStack({ profiles }: SwipeStackProps) {
       )}
 
       <ProfileCard
-        user={{ ...profile, age }}
+        user={profile}
         onLike={handleLike}
         onPass={handlePass}
         onBlock={handleBlock}

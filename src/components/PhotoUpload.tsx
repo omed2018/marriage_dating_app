@@ -69,6 +69,7 @@ export function PhotoUpload({ userId, onUploadComplete }: PhotoUploadProps) {
 
       {preview && (
         <div className="relative w-32 h-32 rounded-lg overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={preview}
             alt="Preview"

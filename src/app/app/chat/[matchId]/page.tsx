@@ -34,7 +34,7 @@ export default async function ChatPage({
   }
 
   const result = await getChatHistory(matchId);
-  const messages = "messages" in result ? result.messages : [];
+  const messages = "messages" in result && result.messages ? result.messages : [];
 
   return (
     <div className="max-w-2xl">
@@ -47,7 +47,13 @@ export default async function ChatPage({
       <ChatWindow
         matchId={matchId}
         currentUserId={userId}
-        initialMessages={messages as any}
+        initialMessages={messages.map((m) => ({
+          id: m.id,
+          content: m.content,
+          senderId: m.senderId,
+          createdAt: m.createdAt.toISOString(),
+          sender: m.sender,
+        }))}
       />
     </div>
   );

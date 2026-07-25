@@ -16,7 +16,7 @@ export default async function AdminReportsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {reports.map((report: any) => (
+          {reports.map((report) => (
             <Card key={report.id}>
               <CardContent className="space-y-2">
                 <div className="flex items-center justify-between">
