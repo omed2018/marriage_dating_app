@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  passwordHash     String
+  gender           Gender
+  dateOfBirth      DateTime
+  bio              String?
+  location         String?
+  latitude         Float?
+  longitude        Float?
+  education        String?
+  occupation       String?
+  height           Int?
+  religion         String?
+  isProfileComplete Boolean  @default(false)
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  photos           Photo[]
+  sentLikes        Interaction[] @relation("Sender")
+  receivedLikes    Interaction[] @relation("Receiver")
+  matchesA         Match[]       @relation("UserA")
+  matchesB         Match[]       @relation("UserB")
+  messages         Message[]
+  sentReports      Report[]      @relation("Reporter")
+  receivedReports  Report[]      @relation("Reported")
+  blocksInitiated  Block[]       @relation("Blocker")
+  blocksReceived   Block[]       @relation("Blocked")
+
+  @@index([gender, isActive, isProfileComplete])
+}
+
+model Photo {
+  id        String  @id @default(cuid())
+  userId    String
+  url       String
+  isPrimary Boolean @default(false)
+  sortOrder Int     @default(0)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Interaction {
+  id         String          @id @default(cuid())
+  senderId   String
+  receiverId String
+  type       InteractionType
+  createdAt  DateTime        @default(now())
+
+  sender   User @relation("Sender", fields: [senderId], references: [id])
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, type])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+
+  userA    User      @relation("UserA", fields: [userAId], references: [id])
+  userB    User      @relation("UserB", fields: [userBId], references: [id])
+  messages Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  matchId   String
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  match  Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id])
+
+  @@index([matchId, createdAt])
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  reporterId  String
+  reportedId  String
+  reason      ReportReason
+  description String?
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  reporter User @relation("Reporter", fields: [reporterId], references: [id])
+  reported User @relation("Reported", fields: [reportedId], references: [id])
+
+  @@index([status])
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id])
+  blocked User @relation("Blocked", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum InteractionType {
+  LIKE
+  PASS
+}
+
+enum ReportReason {
+  FAKE_PROFILE
+  INAPPROPRIATE_CONTENT
+  HARASSMENT
+  SPAM
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
